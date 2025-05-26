@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 class OpenWeatherAPI {
@@ -5,24 +7,19 @@ class OpenWeatherAPI {
 
   const OpenWeatherAPI(this.apiKey);
 
-  void getWeather({
+  Future<Map> getWeather({
     required double lat,
     required double lon,
-  }) {
+  }) async {
     var url =
-        "https://api.openweathermap.org/data/3.0/onecall?lat=$lat&lon=$lon&exclude={part}&appid=$apiKey";
+        "https://api.openweathermap.org/data/2.5/weather?units=metric&lat=$lat&lon=$lon&exclude={part}&appid=$apiKey";
 
-    http.get(Uri.parse(url)).then((response) {
-      if (response.statusCode == 200) {
-        // Handle successful response
-        print('Weather data: ${response.body}');
-      } else {
-        // Handle error response
-        print('Error fetching weather data: ${response.statusCode}');
-      }
-    }).catchError((error) {
-      // Handle network or other errors
-      print('Error: $error');
-    });
+    var res = await http.get(Uri.parse(url));
+    print(res.body);
+    return jsonDecode(res.body);
+  }
+
+  String getWeatherIcon(String iconCode) {
+    return "https://openweathermap.org/img/wn/$iconCode@4x.png";
   }
 }
